@@ -1,0 +1,2 @@
+login		director_msk
+password	Dir2025!
