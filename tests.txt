@@ -1,2 +1,11 @@
+Директор:
 login		director_msk
 password	Dir2025!
+
+Продавец:
+login		seller_msk_1
+password	Sell2025!
+
+Клиент:
+login		client_001
+password	pass123
