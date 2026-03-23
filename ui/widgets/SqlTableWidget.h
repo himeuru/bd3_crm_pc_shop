@@ -18,6 +18,8 @@ public:
     void setQuery(const QString& sql,
                   const QStringList& headers = {});
     void refresh();
+    void clear();              // очистить таблицу без SQL-запроса
+    void setColumnMinWidth(int col, int width);  // минимальная ширина колонки
     void setTitle(const QString& title);
     void setSearchable(bool on);
 

@@ -51,17 +51,18 @@ void DirectorMainWindow::buildUi()
     auto* header   = new QWidget(this);
     auto* hLayout  = new QHBoxLayout(header);
     hLayout->setContentsMargins(16, 8, 16, 8);
-    header->setStyleSheet("background: #181825; border-bottom: 1px solid #313244;");
+    header->setStyleSheet("background: #0a0a12; border-bottom: 1px solid #3b3d57;");
 
     auto* nameLabel = new QLabel(
         QString("⚙  CRM PC Shop  |  Директор: <b>%1</b>")
             .arg(Session::instance().fullName),
         header
-    );
+        );
     nameLabel->setStyleSheet("color: #cdd6f4; font-size: 13px;");
 
     auto* btnLogout = new QPushButton("Выйти", header);
     btnLogout->setObjectName("btnDanger");
+    btnLogout->setStyleSheet("background:#f7768e; color:#ffffff; font-weight:bold; border-radius:6px;");
     btnLogout->setFixedWidth(90);
     btnLogout->setFixedHeight(30);
 
@@ -70,6 +71,16 @@ void DirectorMainWindow::buildUi()
     hLayout->addWidget(btnLogout);
 
     connect(btnLogout, &QPushButton::clicked, this, &DirectorMainWindow::onLogout);
+
+    // Обновлять данные при переключении на вкладку
+    connect(m_tabs, &QTabWidget::currentChanged, this, [this](int idx) {
+        switch (idx) {
+        case 0: m_shopsTab->reload();     break;
+        case 1: m_staffTab->reload();     break;
+        case 2: m_ordersTab->reload();    break;
+        case 3: m_warehouseTab->reload(); break;
+        }
+    });
 
     auto* wrapper = new QWidget(this);
     auto* wLayout = new QVBoxLayout(wrapper);
@@ -91,21 +102,21 @@ void DirectorMainWindow::buildStatusBar()
 void DirectorMainWindow::refreshCurrentTab()
 {
     switch (m_tabs->currentIndex()) {
-        case 0: m_shopsTab->reload();     break;
-        case 1: m_staffTab->reload();     break;
-        case 2: m_ordersTab->reload();    break;
-        case 3: m_warehouseTab->reload(); break;
-        case 4: m_reportsTab->reload();   break;
+    case 0: m_shopsTab->reload();     break;
+    case 1: m_staffTab->reload();     break;
+    case 2: m_ordersTab->reload();    break;
+    case 3: m_warehouseTab->reload(); break;
+    case 4: m_reportsTab->reload();   break;
     }
     statusBar()->showMessage("Обновлено: " +
-        QDateTime::currentDateTime().toString("HH:mm:ss"), 3000);
+                                 QDateTime::currentDateTime().toString("HH:mm:ss"), 3000);
 }
 
 void DirectorMainWindow::onLogout()
 {
     if (QMessageBox::question(this, "Выход",
-        "Выйти из системы?",
-        QMessageBox::Yes | QMessageBox::No) != QMessageBox::Yes)
+                              "Выйти из системы?",
+                              QMessageBox::Yes | QMessageBox::No) != QMessageBox::Yes)
         return;
 
     m_refreshTimer->stop();

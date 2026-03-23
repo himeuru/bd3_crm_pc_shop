@@ -40,7 +40,7 @@ void SellerMainWindow::buildUi()
     m_tabs->addTab(m_salaryTab,   "💰  Зарплата");
 
     auto* header  = new QWidget(this);
-    header->setStyleSheet("background: #181825; border-bottom: 1px solid #313244;");
+    header->setStyleSheet("background: #0a0a12; border-bottom: 1px solid #3b3d57;");
     auto* hLayout = new QHBoxLayout(header);
     hLayout->setContentsMargins(16, 8, 16, 8);
 
@@ -51,6 +51,7 @@ void SellerMainWindow::buildUi()
 
     auto* btnLogout = new QPushButton("Выйти", header);
     btnLogout->setObjectName("btnDanger");
+    btnLogout->setStyleSheet("background:#f7768e; color:#ffffff; font-weight:bold; border-radius:6px;");
     btnLogout->setFixedSize(90, 30);
 
     hLayout->addWidget(nameLabel);
@@ -67,20 +68,29 @@ void SellerMainWindow::buildUi()
     setCentralWidget(wrapper);
 
     connect(btnLogout, &QPushButton::clicked, this, &SellerMainWindow::onLogout);
+
+    // Обновлять склад и зарплату при переключении на соответствующую вкладку
+    connect(m_tabs, &QTabWidget::currentChanged, this, [this](int idx) {
+        switch (idx) {
+        case 0: m_newOrderTab->reloadProducts(); break;
+        case 2: m_stockTab->reload();   break;
+        case 3: m_salaryTab->reload();  break;
+        }
+    });
 }
 
 void SellerMainWindow::refreshCurrentTab()
 {
     switch (m_tabs->currentIndex()) {
-        case 2: m_stockTab->reload();  break;
-        case 3: m_salaryTab->reload(); break;
+    case 2: m_stockTab->reload();  break;
+    case 3: m_salaryTab->reload(); break;
     }
 }
 
 void SellerMainWindow::onLogout()
 {
     if (QMessageBox::question(this, "Выход", "Выйти из системы?",
-        QMessageBox::Yes | QMessageBox::No) != QMessageBox::Yes) return;
+                              QMessageBox::Yes | QMessageBox::No) != QMessageBox::Yes) return;
     m_refreshTimer->stop();
     Session::instance().clear();
     (new LoginWindow())->show();

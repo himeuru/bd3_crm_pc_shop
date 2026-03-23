@@ -30,10 +30,12 @@ void ReportsTab::buildUi()
     m_dateFrom = new QDateEdit(QDate::currentDate().addMonths(-3), this);
     m_dateFrom->setCalendarPopup(true);
     m_dateFrom->setDisplayFormat("dd.MM.yyyy");
+    m_dateFrom->setMinimumWidth(110);
 
     auto* lblTo = new QLabel("по:", this);
     m_dateTo = new QDateEdit(QDate::currentDate(), this);
     m_dateTo->setCalendarPopup(true);
+    m_dateTo->setMinimumWidth(110);
     m_dateTo->setDisplayFormat("dd.MM.yyyy");
 
     auto* btnShow = new QPushButton("Сформировать", this);
@@ -50,7 +52,7 @@ void ReportsTab::buildUi()
     m_table->setSearchable(true);
 
     layout->addLayout(filterRow);
-    layout->addWidget(m_table);
+    layout->addWidget(m_table, 1);
 
     connect(btnShow, &QPushButton::clicked, this, &ReportsTab::onShowReport);
 }
@@ -86,9 +88,9 @@ void ReportsTab::onShowReport()
                 "  AND o.created_at::date BETWEEN '%2' AND '%3' "
                 "GROUP BY DATE_TRUNC('month', o.created_at) "
                 "ORDER BY 1 DESC"
-            ).arg(shopId).arg(from).arg(to),
+                ).arg(shopId).arg(from).arg(to),
             {"Месяц", "Заказов", "Выручка", "Валовая прибыль"}
-        );
+            );
     } else if (rep == "salaries") {
         m_table->setQuery(
             QString(
@@ -104,9 +106,9 @@ void ReportsTab::onShowReport()
                 "WHERE e.shop_id = %1 AND e.role = 'seller' AND e.is_active "
                 "GROUP BY e.id, e.full_name, e.salary "
                 "ORDER BY \"Итого\" DESC"
-            ).arg(shopId).arg(from).arg(to),
+                ).arg(shopId).arg(from).arg(to),
             {"Сотрудник", "Оклад", "Комиссия", "Итого"}
-        );
+            );
     } else if (rep == "top_products") {
         m_table->setQuery(
             QString(
@@ -124,9 +126,9 @@ void ReportsTab::onShowReport()
                 "GROUP BY p.name, oi.product_category "
                 "ORDER BY \"Продано\" DESC "
                 "LIMIT 20"
-            ).arg(shopId).arg(from).arg(to),
+                ).arg(shopId).arg(from).arg(to),
             {"Товар", "Категория", "Продано", "Выручка", "Прибыль"}
-        );
+            );
     } else if (rep == "top_categories") {
         m_table->setQuery(
             QString(
@@ -140,9 +142,9 @@ void ReportsTab::onShowReport()
                 "  AND o.created_at::date BETWEEN '%2' AND '%3' "
                 "GROUP BY oi.product_category "
                 "ORDER BY \"Выручка\" DESC"
-            ).arg(shopId).arg(from).arg(to),
+                ).arg(shopId).arg(from).arg(to),
             {"Категория", "Продано", "Выручка"}
-        );
+            );
     } else if (rep == "salary_log") {
         m_table->setQuery(
             QString(
@@ -159,9 +161,9 @@ void ReportsTab::onShowReport()
                 "WHERE e.shop_id = %1 "
                 "  AND sl.changed_at::date BETWEEN '%2' AND '%3' "
                 "ORDER BY sl.changed_at DESC"
-            ).arg(shopId).arg(from).arg(to),
+                ).arg(shopId).arg(from).arg(to),
             {"Дата", "Сотрудник", "Старый оклад", "Новый оклад", "Изменение", "Изменил"}
-        );
+            );
     } else if (rep == "stock_log") {
         m_table->setQuery(
             QString(
@@ -180,8 +182,8 @@ void ReportsTab::onShowReport()
                 "WHERE tw.shop_id = %1 "
                 "  AND stl.transferred_at::date BETWEEN '%2' AND '%3' "
                 "ORDER BY stl.transferred_at DESC"
-            ).arg(shopId).arg(from).arg(to),
+                ).arg(shopId).arg(from).arg(to),
             {"Дата", "Товар", "Кол-во", "Откуда", "Куда", "Инициатор"}
-        );
+            );
     }
 }

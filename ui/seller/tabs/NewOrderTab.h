@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QTableWidget>
+#include <QComboBox>
 #include "../../widgets/SqlTableWidget.h"
 
 struct CartItem {
@@ -21,29 +22,44 @@ class NewOrderTab : public QWidget {
 public:
     explicit NewOrderTab(QWidget* parent = nullptr);
 
+public slots:
+    void reloadProducts();  // вызывается при переключении на вкладку
+
 private slots:
     void onSearch();
     void onAddToCart();
     void onRemoveFromCart();
+    void onClearCart();
     void onPlaceOrder();
     void onClientSearch();
+    void onClearClient();
 
 private:
     void buildUi();
+    void loadProducts();
     void refreshCart();
-    void refreshTotal();
-    double computeTotal() const;
+    void updateOrderButton();
 
-    SqlTableWidget* m_productsTable;
-    QTableWidget*   m_cartTable;
-    QLineEdit*      m_searchEdit;
-    QLineEdit*      m_clientSearch;
-    QLabel*         m_clientLabel;
-    QLabel*         m_totalLabel;
-    QLabel*         m_discountLabel;
-    QSpinBox*       m_qtySpinner;
-    QPushButton*    m_btnAddCart;
-    QPushButton*    m_btnPlaceOrder;
+    // Каталог
+    SqlTableWidget* m_productsTable  = nullptr;
+    QLineEdit*      m_searchEdit     = nullptr;
+    QComboBox*      m_categoryFilter = nullptr;
+    QSpinBox*       m_qtySpinner     = nullptr;
+    QPushButton*    m_btnAddCart     = nullptr;
+    QLabel*         m_stockHint      = nullptr;
+
+    // Клиент
+    QLineEdit*      m_clientSearch    = nullptr;
+    QPushButton*    m_btnClientSearch = nullptr;
+    QLabel*         m_clientLabel     = nullptr;
+    QLabel*         m_discountLabel   = nullptr;
+
+    // Корзина
+    QTableWidget*   m_cartTable           = nullptr;
+    QLabel*         m_cartCountLabel      = nullptr;
+    QLabel*         m_totalLabel          = nullptr;
+    QLabel*         m_discountSavingLabel = nullptr;
+    QPushButton*    m_btnPlaceOrder       = nullptr;
 
     QList<CartItem> m_cart;
     int     m_currentClientId = -1;

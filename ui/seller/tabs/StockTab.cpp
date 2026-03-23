@@ -1,6 +1,9 @@
 #include "StockTab.h"
 #include "../../../core/Session.h"
 #include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QLabel>
 
 StockTab::StockTab(QWidget* parent) : QWidget(parent)
 {
@@ -12,10 +15,26 @@ void StockTab::buildUi()
 {
     auto* layout = new QVBoxLayout(this);
     layout->setContentsMargins(16, 16, 16, 16);
+    layout->setSpacing(10);
+
+    auto* btnRow = new QHBoxLayout();
+    auto* lblHint = new QLabel(
+        "Товары отсортированы по убыванию остатка — заканчивающиеся сверху", this);
+    lblHint->setStyleSheet("color: #6c7086; font-size: 12px;");
+    auto* btnRefresh = new QPushButton("Обновить", this);
+    btnRow->addWidget(lblHint);
+    btnRow->addStretch();
+    btnRow->addWidget(btnRefresh);
+
     m_table = new SqlTableWidget(this);
     m_table->setTitle("Товары на микроскладе");
     m_table->setSearchable(true);
-    layout->addWidget(m_table);
+    m_table->setMinimumHeight(200);
+
+    layout->addLayout(btnRow);
+    layout->addWidget(m_table, 1);
+
+    connect(btnRefresh, &QPushButton::clicked, this, &StockTab::reload);
 }
 
 void StockTab::reload()

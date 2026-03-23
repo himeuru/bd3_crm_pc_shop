@@ -1,6 +1,6 @@
 #include "SqlTableWidget.h"
-#include <QSqlRecord>
 #include "../../core/DatabaseManager.h"
+#include <QSqlRecord>
 
 SqlTableWidget::SqlTableWidget(QWidget* parent)
     : QWidget(parent)
@@ -12,7 +12,7 @@ SqlTableWidget::SqlTableWidget(QWidget* parent)
     auto* topBar = new QHBoxLayout();
 
     m_title = new QLabel(this);
-    m_title->setStyleSheet("font-size: 15px; font-weight: bold; color: #89b4fa;");
+    m_title->setStyleSheet("font-size: 15px; font-weight: bold; color: #7aa2f7;");
 
     m_search = new QLineEdit(this);
     m_search->setPlaceholderText("Поиск...");
@@ -49,13 +49,13 @@ SqlTableWidget::SqlTableWidget(QWidget* parent)
 
     connect(m_view->selectionModel(), &QItemSelectionModel::currentRowChanged,
             this, [this](const QModelIndex& cur, const QModelIndex&) {
-        if (cur.isValid()) emit rowSelected(m_proxy->mapToSource(cur).row());
-    });
+                if (cur.isValid()) emit rowSelected(m_proxy->mapToSource(cur).row());
+            });
 
     connect(m_view, &QTableView::doubleClicked,
             this, [this](const QModelIndex& idx) {
-        emit rowDoubleClicked(m_proxy->mapToSource(idx).row());
-    });
+                emit rowDoubleClicked(m_proxy->mapToSource(idx).row());
+            });
 }
 
 void SqlTableWidget::setQuery(const QString& sql, const QStringList& headers)
@@ -73,7 +73,24 @@ void SqlTableWidget::refresh()
         qWarning() << "[SqlTableWidget] query error:" << m_model->lastError().text();
     }
     applyHeaders(m_headers);
+    m_view->reset();                 // принудительно пересоздаёт вью из модели
     m_view->resizeColumnsToContents();
+    m_view->viewport()->update();    // форсируем перерисовку
+}
+
+void SqlTableWidget::setColumnMinWidth(int col, int width)
+{
+    if (col < m_view->horizontalHeader()->count())
+        m_view->horizontalHeader()->setMinimumSectionSize(width);
+    m_view->setColumnWidth(col, qMax(width, m_view->columnWidth(col)));
+}
+
+void SqlTableWidget::clear()
+{
+    m_sql.clear();
+    m_headers.clear();
+    m_model->clear();
+    m_view->reset();
 }
 
 void SqlTableWidget::setTitle(const QString& title)
